@@ -1,0 +1,9 @@
+{
+  "name": "checkbox-socket",
+  "version": "0.0.1",
+  "description": "checkbox app using socket.io",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
