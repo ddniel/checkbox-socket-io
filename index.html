@@ -5,7 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Checkbox App</title>
   </head>
-  <body>
-    <h1>Hola?</h1>
+  <body style="width: 100%; text-align: center">
+    <h1>Checkbox with socket.io</h1>
+    <div id="checkbox-container" style="max-width: 400px; margin: auto"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+
+      const checkboxContainer = document.getElementById("checkbox-container");
+
+      for (i = 0; i < 100; i++) {
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.id = `checkbox-${i}`;
+        checkbox.onclick = (event) => handleCheck(event);
+        checkboxContainer.appendChild(checkbox);
+      }
+
+      function handleCheck(e) {
+        const data = {
+          id: e.target.id,
+          checked: e.target.checked,
+        };
+        socket.emit("checked", e.target.id, e.target.checked);
+      }
+
+      socket.on("checked", (id, checked) => {
+        const checkbox = document.getElementById(`${id}`);
+        checkbox.checked = checked;
+      });
+    </script>
   </body>
 </html>
