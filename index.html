@@ -4,8 +4,66 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Checkbox App</title>
+    <link rel="stylesheet" href="./index.css" />
   </head>
   <body>
-    <h1>Hola?</h1>
+    <header>
+      <div class="text">
+        <span style="--i:1">C</span>
+        <span style="--i:2">H</span>
+        <span style="--i:3">E</span>
+        <span style="--i:4">C</span>
+        <span style="--i:5">K</span>
+        <span style="--i:6">B</span>
+        <span style="--i:7">O</span>
+        <span style="--i:8">X</span>
+        <span style="--i:9"></span>
+        <span style="--i:10">A</span>
+        <span style="--i:11">P</span>
+        <span style="--i:12">P</span>
+      </div>
+      <div class="line"></div>
+    </header>
+
+    <div id="checkbox-container"></div>
+
+    <footer>
+      <p>@Danny Becerra</p>
+    </footer>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      let counter = 0;
+
+      const socket = io({
+        auth: {
+          serverOffset: 0,
+        },
+        // enable retries
+        ackTimeout: 10000,
+        retries: 3,
+      });
+
+      const checkboxContainer = document.getElementById("checkbox-container");
+
+      for (i = 0; i < 100; i++) {
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.id = `checkbox-${i}`;
+        checkbox.onclick = (event) => handleCheck(event);
+        checkboxContainer.appendChild(checkbox);
+      }
+
+      function handleCheck(e) {
+        const clientOffset = `${socket.id}-${counter++}`;
+        socket.emit("checked", e.target.id, e.target.checked, clientOffset);
+      }
+
+      socket.on("checked", (id, checked, serverOffset) => {
+        const checkbox = document.getElementById(`${id}`);
+        checkbox.checked = checked;
+        socket.auth.serverOffset = serverOffset;
+      });
+    </script>
   </body>
 </html>
