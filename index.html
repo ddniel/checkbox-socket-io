@@ -4,14 +4,45 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Checkbox App</title>
+    <link rel="stylesheet" href="./index.css" />
   </head>
-  <body style="width: 100%; text-align: center">
-    <h1>Checkbox with socket.io</h1>
-    <div id="checkbox-container" style="max-width: 400px; margin: auto"></div>
+  <body>
+    <header>
+      <div class="text">
+        <span style="--i:1">C</span>
+        <span style="--i:2">H</span>
+        <span style="--i:3">E</span>
+        <span style="--i:4">C</span>
+        <span style="--i:5">K</span>
+        <span style="--i:6">B</span>
+        <span style="--i:7">O</span>
+        <span style="--i:8">X</span>
+        <span style="--i:9"></span>
+        <span style="--i:10">A</span>
+        <span style="--i:11">P</span>
+        <span style="--i:12">P</span>
+      </div>
+      <div class="line"></div>
+    </header>
+
+    <div id="checkbox-container"></div>
+
+    <footer>
+      <p>@Danny Becerra</p>
+    </footer>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
-      const socket = io();
+      let counter = 0;
+
+      const socket = io({
+        auth: {
+          serverOffset: 0,
+        },
+        // enable retries
+        ackTimeout: 10000,
+        retries: 3,
+      });
 
       const checkboxContainer = document.getElementById("checkbox-container");
 
@@ -24,16 +55,14 @@
       }
 
       function handleCheck(e) {
-        const data = {
-          id: e.target.id,
-          checked: e.target.checked,
-        };
-        socket.emit("checked", e.target.id, e.target.checked);
+        const clientOffset = `${socket.id}-${counter++}`;
+        socket.emit("checked", e.target.id, e.target.checked, clientOffset);
       }
 
-      socket.on("checked", (id, checked) => {
+      socket.on("checked", (id, checked, serverOffset) => {
         const checkbox = document.getElementById(`${id}`);
         checkbox.checked = checked;
+        socket.auth.serverOffset = serverOffset;
       });
     </script>
   </body>
